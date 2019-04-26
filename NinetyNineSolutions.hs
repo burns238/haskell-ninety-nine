@@ -78,11 +78,11 @@ data NestedList a = Elem a | List [NestedList a]
 flatten :: NestedList a -> [a]
 flatten = implementThis
 
--- Eliminate consecutive duplicates of list elements.
+-- Eliminate consecutive duplicates of list elements. e.g. aaabbbccc -> abc
 compress :: [a] -> [a]
 compress = implementThis
 
--- Pack consecutive duplicates of list elements into sublists. If a list contains repeated elements they should be placed in separate sublists.
+-- Pack consecutive duplicates of list elements into sublists. e.g. aaabbbccc -> (aaa,bbb,ccc).
 pack :: [a] -> [[a]]
 pack = implementThis
 

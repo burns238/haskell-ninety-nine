@@ -34,9 +34,9 @@ module NinetyNineSolutions where
 import Control.Monad        (void)
 import Data.Maybe           (isJust)
 import Text.Read            (readMaybe)
-import Prelude       hiding (null, head, tail, length, and, or, (++),
-                             map, filter, foldr, foldl, gcd)
+import Prelude     
 import Math.NumberTheory.Powers.Squares
+import Data.Foldable
 implementThis :: a
 implementThis = error "SOMETHING IS NOT IMPLEMENTED!"
 
@@ -50,52 +50,65 @@ implementThis = error "SOMETHING IS NOT IMPLEMENTED!"
 
 -- Find the last element of a list
 myLast :: [a] -> a
-myLast = implementThis
+myLast [] = error "Nowt 'ere" 
+myLast [x] = x
+myLast (_:xs) = myLast xs
 
 -- Find the last but one element of a list
 myButLast :: [a] -> a 
-myButLast = implementThis
+myButLast [] = error "Empty list"
+myButLast [x, _] = x
+myButLast (_:xs) = myButLast xs
 
 -- Find the K'th element of a list, the first element is number 1
 elementAt :: [a] -> Int -> a
-elementAt = implementThis
+elementAt _ 0 = error "Elements start at 1"
+elementAt [] _ = error "Empty list"
+elementAt (x:_) 1 = x
+elementAt (_:xs) i = elementAt xs $ i - 1 
 
 -- Find the number of elements of a list
 myLength :: [a] -> Int
-myLength = implementThis
+myLength l = foldl (+) 0 (map (const 1) l) 
 
 -- Reverse a list
 myReverse :: [a] -> [a]
-myReverse = implementThis
+myReverse = foldl (\a x -> (x:a)) [] 
 
 -- Find out whether a list is a palindrome. A palindrome can be read forward or backward; e.g. (x a m a x).
-isPalindrome :: [a] -> Bool
-isPalindrome = implementThis
+isPalindrome :: (Eq a) => [a] -> Bool
+isPalindrome l = l == myReverse l 
 
 -- Flatten a nested list structure.
 -- -- We have to define a new data type, because lists in Haskell are homogeneous.
 data NestedList a = Elem a | List [NestedList a]
 flatten :: NestedList a -> [a]
-flatten = implementThis
+flatten (List []) = []
+flatten (Elem a) = [a]
+flatten (List (x:xs)) = flatten x ++ flatten (List xs)
 
--- Eliminate consecutive duplicates of list elements.
-compress :: [a] -> [a]
-compress = implementThis
+-- Eliminate consecutive duplicates of list elements. e.g. aaabbbccc -> abc
+compress :: (Eq a) => [a] -> [a]
+compress (x:ys@(y:_))
+    | x == y    = compress ys
+    | otherwise = x : compress ys
+compress ys = ys
 
--- Pack consecutive duplicates of list elements into sublists. If a list contains repeated elements they should be placed in separate sublists.
-pack :: [a] -> [[a]]
-pack = implementThis
+-- Pack consecutive duplicates of list elements into sublists. e.g. aaabbbccc -> (aaa,bbb,ccc)
+pack :: (Eq a) => [a] -> [[a]]
+pack = getReps []
+        where
+          getReps :: (Eq a) => [a] -> [a] -> [[a]]
+          getReps [] (x:xs) = getReps [x] xs
+          getReps l [] = [l]
+          getReps (z:zs) (y:ys)
+                  | z == y    = getReps ((z:zs) ++ [y]) ys
+                  | otherwise = (z:zs):(getReps [y] ys)   
 
 -- Run-length encoding of a list. Use the result of the last problem to implement the so-called run-length encoding data compression method. Consecutive duplicates of elements are encoded as lists (N E) where N is the number of duplicates of the element E.
-encode :: [a] -> [(Int, a)]
-encode = implementThis
-
-
-
-
-
-
-
+encode :: (Eq a) => [a] -> [(Int, a)]
+encode [] = []
+encode l = map (\pl -> (myLength pl, head pl)) $ pack l
 
 
 

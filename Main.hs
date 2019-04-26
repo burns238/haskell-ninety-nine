@@ -133,9 +133,6 @@ test name expected actual = do
         onFailure s = putTag "!!" kR >> printf " error: %s" s
         onTimeout   = putTag "??" kR >> putStr " (timeout)"
 
-testI :: String -> Int -> Int -> IO Bool
-testI = test
-
 -- main
 
 tests :: [Section] -> [IO Bool]
@@ -164,13 +161,18 @@ tests sections =
                , test "flatten (Elem 5)" [5]             $ C.flatten (C.Elem 5)
                , test "flatten (List [Elem 1, List [Elem 2, List [Elem 3, Elem 4], Elem 5]])"
                       [1,2,3,4,5]                        $ C.flatten (C.List [C.Elem 1, C.List [C.Elem 2, C.List [C.Elem 3, C.Elem 4], C.Elem 5]])
-               --, test "flatten (List [])" []             $ C.flatten (C.List [])
                , test "compress \"aaaabccaadeeee\"" "abcade"
                                                          $ C.compress "aaaabccaadeeee"
+               , test "compress [1,2,2,2,3,3,4,5,5,5]"  [1,2,3,4,5] 
+                                                         $ C.compress [1,2,2,2,3,3,4,5,5,5]
                , test "pack \"aaaabccaadeeee\"" ["aaaa","b","cc","aa","d","eeee"] 
                                                          $ C.pack "aaaabccaadeeee"
+               , test "pack [1,2,2,2,3,3,4,5,5,5]" [[1],[2,2,2],[3,3],[4],[5,5,5]] 
+                                                         $ C.pack [1,2,2,2,3,3,4,5,5,5]
                , test "encode \"aaaabccaadeeee\"" [(4,'a'),(1,'b'),(2,'c'),(2,'a'),(1,'d'),(4,'e')]
                                                          $ C.encode "aaaabccaadeeee"   
+               , test "encode [1,2,2,2,3,3,4,5,5,5]" [(1,1),(3,2),(2,3),(1,4),(3,5)] 
+                                                         $ C.encode [1,2,2,2,3,3,4,5,5,5]
                ]
              Section 2 ->
                [ display "#### Section 2"
