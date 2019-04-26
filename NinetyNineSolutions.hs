@@ -91,15 +91,54 @@ encode :: [a] -> [(Int, a)]
 encode = implementThis
 
 
+{- #####################################################################
+   Problems 11 to 20
+-}
 
+-- Modify the result of problem 10 in such a way that if an element has no duplicates it is simply copied into the result list. Only elements with duplicates are transferred as (N E) lists.
+data ListItem a = Single a | Multiple Int a
+    deriving (Show, Eq)
+encodeModified :: [a] -> [ListItem a]
+encodeModified = implementThis
 
+-- Given a run-length code list generated as specified in problem 11. Construct its uncompressed version.
+decodeModified :: [ListItem a] -> [a]
+decodeModified = implementThis
 
+-- Implement the so-called run-length encoding data compression method directly. I.e. don't explicitly create the sublists containing the duplicates, as in problem 9, but only count them. As in problem P11, simplify the result list by replacing the singleton lists (1 X) by a Single X.
+encodeDirect :: [a] -> [(Int, a)]
+encodeDirect = implementThis
 
+-- Duplicate the elements of a list
+dupli :: [a] -> [a]
+dupli = implementThis
 
+-- Replicate the elements of a list a number of times 
+repli :: [a] -> Int -> [a]
+repli = implementThis
 
+-- Drop every N'th element from a list.
+dropEvery :: [a] -> Int -> [a]
+dropEvery = implementThis
 
+-- Split a list into two parts; the length of the first part is given.
+-- -- Do not use any predefined predicates.
+split :: [a] -> Int -> ([a],[a])
+split = implementThis
 
+-- Given two indices, i and k, the slice is the list containing the elements between the i'th and k'th element of the original list (both limits included). Start counting the elements with 1.
+slice :: [a] -> Int -> Int -> [a]
+slice = implementThis
 
+-- Rotate a list N places to the left.
+-- e.g. rotate ['a','b','c','d','e','f','g','h'] 3 -> "defghabc"
+-- -- Hint: Use the predefined functions length and (++).
+rotate :: [a] -> Int -> [a] 
+rotate = implementThis
+
+-- Remove and separate the K'th element from a list.
+removeAt :: [a] -> Int -> (a,[a])
+removeAt = implementThis
 
 
 

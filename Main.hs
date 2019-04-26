@@ -175,8 +175,44 @@ tests sections =
                                                          $ C.encode [1,2,2,2,3,3,4,5,5,5]
                ]
              Section 2 ->
-               [ display "#### Section 2"
+               [ display "#### Problems 11 to 20"
+               , test "encodeModified \"aaaabccaadeeee\""
+                      [C.Multiple 4 'a', C.Single 'b', C.Multiple 2 'c', C.Multiple 2 'a', C.Single 'd', C.Multiple 4 'e']
+                                                         $ C.encodeModified "aaaabccaadeeee"
+               , test "encodeModified [1,2,2,2,3,3,4,5,5,5]"  [C.Single (1::Int), C.Multiple 3 2, C.Multiple 2 3, C.Single 4, C.Multiple 3 5] 
+                                                         $ C.encodeModified [1,2,2,2,3,3,4,5,5,5]
+               , test "decodeModified [Multiple 4 'a', Single 'b', Multiple 2 'c', Multiple 2 'a', Single 'd', Multiple 4 'e']"
+                       "aaaabccaadeeee"                  $ C.decodeModified [C.Multiple 4 'a', C.Single 'b', C.Multiple 2 'c', C.Multiple 2 'a', C.Single 'd', C.Multiple 4 'e']
+               , test "decodeModified [Single (1::Int), Multiple 3 2, Multiple 2 3, Single 4, Multiple 3 5]"      
+                       [1,2,2,2,3,3,4,5,5,5]             $ C.decodeModified [C.Single (1::Int), C.Multiple 3 2, C.Multiple 2 3, C.Single 4, C.Multiple 3 5]
+               , test "encodeDirect \"aaaabccaadeeee\"" [(4,'a'),(1,'b'),(2,'c'),(2,'a'),(1,'d'),(4,'e')]
+                                                         $ C.encodeDirect "aaaabccaadeeee"
+               , test "encodeDirect [1,2,2,2,3,3,4,5,5,5]" [(1,1),(3,2),(2,3),(1,4),(3,5)]
+                                                         $ C.encodeDirect [1,2,2,2,3,3,4,5,5,5]
+               , test "dupli [1,2,3]" [1,1,2,2,3,3]      $ C.dupli [1,2,3] 
+               , test "dupli \"abbacddc\"" "aabbbbaaccddddcc"
+                                                         $ C.dupli "abbacddc"
+               , test "repli [1,2,3] 3" [1,1,1,2,2,2,3,3,3]
+                                                         $ C.repli [1,2,3] 3
+               , test "repli [1,2,3] 5" [1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5]
+                                                         $ C.repli [1,2,3] 5    
+               , test "dropEvery \"abcdefghij\" 3" "abdeghj"
+                                                         $ C.dropEvery "abcdefghij" 3
+               , test "dropEvery [1,2,3,4,5,6,7] 2" [1,3,5,7] 
+                                                         $ C.dropEvery [1,2,3,4,5,6,7] 2
+               , test "split \"abcdefghij\" 3" ("abc", "defghij") 
+                                                         $ C.split "abcdefghij" 3
+               , test "split [1,2,3,4,5] 2" ([1,2],[3,4,5])
+                                                         $ C.split [1,2,3,4,5] 2
+               , test "slice \"abcdefghij\" 5 8" "efg"   $ C.slice "abcdefghij" 5 8 
+               , test "slice [1,2,3,4,5] 2 4" [2,3,4]    $ C.slice [1,2,3,4,5] 2 4
+               , test "rotate ['a','b','c','d','e','f','g','h'] 3" "defghabc"
+                                                         $ C.rotate ['a','b','c','d','e','f','g','h'] 3
+               , test "rotate ['a','b','c','d','e','f','g','h'] (-2)" "ghabcdef"
+                                                         $ C.rotate ['a','b','c','d','e','f','g','h'] (-2)
+               , test "removeAt \"abcd\" 2" ('b', "acd") $ C.removeAt "abcd" 2
                ]
+
              Section unexpected ->
                [ display $ "Unexpected section requested: " ++ show unexpected
                ]
