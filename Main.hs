@@ -33,6 +33,7 @@ import System.Posix.IO (stdOutput)
 import System.Posix.Terminal (queryTerminal)
 import System.Timeout
 import Text.Printf
+import Data.List
 
 import qualified NinetyNineSolutions as C
 
@@ -133,6 +134,12 @@ test name expected actual = do
         onFailure s = putTag "!!" kR >> printf " error: %s" s
         onTimeout   = putTag "??" kR >> putStr " (timeout)"
 
+contains :: (Eq a) => [a] -> [a] -> Bool
+contains [] _ = True
+contains _ [] = False
+contains (x:xs) l2 = if elemIndex x l2 == Nothing then False else contains xs l2
+
+
 -- main
 
 tests :: [Section] -> [IO Bool]
@@ -211,6 +218,25 @@ tests sections =
                , test "rotate ['a','b','c','d','e','f','g','h'] (-2)" "ghabcdef"
                                                          $ C.rotate ['a','b','c','d','e','f','g','h'] (-2)
                , test "removeAt \"abcd\" 2" ('b', "acd") $ C.removeAt "abcd" 2
+               ]
+             Section 3 ->
+               [ display "#### Problems 11 to 20"
+               , test "insertAt 'X' \"abcd\" 2" "aXbcd"  $ C.insertAt 'X' "abcd" 2
+               , test "insertAt 3 [0..9] 6" [0,1,2,3,4,5,3,6,7,8,9]
+                                                         $ C.insertAt 3 [0..9] 6
+               , test "range 0 3" [0,1,2,3]              $ C.range 0 3
+               , test "range 4 9" [4,5,6,7,8,9]          $ C.range 4 9
+               , test "rnd_select \"abcde\" 3" True      $ C.rnd_select "abcde" 3 `contains` "abcde"
+               , test "length rnd_select \"abcde\" 3" 3  (length (C.rnd_select "abcde" 3))
+               , test "rnd_select [0..9] 2" True         $ C.rnd_select [0..9] 2 `contains` [0..9]
+               , test "length C.rnd_select [0..9] 2" 2   (length (C.rnd_select [0..9] 2))
+               , test "rnd_permu [0..9]" True            (C.rnd_permu [0..9] `contains` [0..9] && [0..9] `contains` C.rnd_permu [0..9]) 
+               , test "combinations \"abcd\" 3" ["abc", "abd", "acd", "bcd"]
+                                                         $ C.combinations "abcd" 3
+               , test "lsort [\"abc\",\"de\",\"fgh\",\"de\",\"ijkl\",\"mn\",\"o\"]"  ["o","de","de","mn","abc","fgh","ijkl"]             
+                                                         $ C.lsort ["abc","de","fgh","de","ijkl","mn","o"]
+               , test "lfsort [\"abc\", \"de\", \"fgh\", \"de\", \"ijkl\", \"mn\", \"o\"]" ["ijkl","o","abc","fgh","de","de","mn"]
+                                                         $ C.lfsort ["abc", "de", "fgh", "de", "ijkl", "mn", "o"]
                ]
 
              Section unexpected ->
