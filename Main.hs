@@ -33,7 +33,6 @@ import System.Posix.IO (stdOutput)
 import System.Posix.Terminal (queryTerminal)
 import System.Timeout
 import Text.Printf
-import Data.List
 
 import qualified NinetyNineSolutions as C
 
@@ -134,11 +133,6 @@ test name expected actual = do
         onFailure s = putTag "!!" kR >> printf " error: %s" s
         onTimeout   = putTag "??" kR >> putStr " (timeout)"
 
-contains :: (Eq a) => [a] -> [a] -> Bool
-contains [] _ = True
-contains _ [] = False
-contains (x:xs) l2 = if elemIndex x l2 == Nothing then False else contains xs l2
-
 
 -- main
 
@@ -220,25 +214,41 @@ tests sections =
                , test "removeAt \"abcd\" 2" ('b', "acd") $ C.removeAt "abcd" 2
                ]
              Section 3 ->
-               [ display "#### Problems 11 to 20"
+               [ display "#### Problems 21 to 30"
                , test "insertAt 'X' \"abcd\" 2" "aXbcd"  $ C.insertAt 'X' "abcd" 2
-               , test "insertAt 3 [0..9] 6" [0,1,2,3,4,5,3,6,7,8,9]
+               , test "insertAt 3 [0..9] 6" [0,1,2,3,4,3,5,6,7,8,9]
                                                          $ C.insertAt 3 [0..9] 6
                , test "range 0 3" [0,1,2,3]              $ C.range 0 3
                , test "range 4 9" [4,5,6,7,8,9]          $ C.range 4 9
-               , test "rnd_select \"abcde\" 3" True      $ C.rnd_select "abcde" 3 `contains` "abcde"
-               , test "length rnd_select \"abcde\" 3" 3  (length (C.rnd_select "abcde" 3))
-               , test "rnd_select [0..9] 2" True         $ C.rnd_select [0..9] 2 `contains` [0..9]
-               , test "length C.rnd_select [0..9] 2" 2   (length (C.rnd_select [0..9] 2))
-               , test "rnd_permu [0..9]" True            (C.rnd_permu [0..9] `contains` [0..9] && [0..9] `contains` C.rnd_permu [0..9]) 
-               , test "combinations \"abcd\" 3" ["abc", "abd", "acd", "bcd"]
-                                                         $ C.combinations "abcd" 3
+               , test "combinations 3 \"abcd\"" ["abc", "abd", "acd", "bcd"]
+                                                         $ C.combinations 3  "abcd"
                , test "lsort [\"abc\",\"de\",\"fgh\",\"de\",\"ijkl\",\"mn\",\"o\"]"  ["o","de","de","mn","abc","fgh","ijkl"]             
                                                          $ C.lsort ["abc","de","fgh","de","ijkl","mn","o"]
                , test "lfsort [\"abc\", \"de\", \"fgh\", \"de\", \"ijkl\", \"mn\", \"o\"]" ["ijkl","o","abc","fgh","de","de","mn"]
                                                          $ C.lfsort ["abc", "de", "fgh", "de", "ijkl", "mn", "o"]
                ]
-
+             Section 4 ->
+               [ display "#### Problems 31 to 40"
+               , test "isPrime 7" True                   $ C.isPrime 7
+               , test "isPrime 4" False                  $ C.isPrime 4
+               , test "isPrime 89" True                  $ C.isPrime 89
+               , test "myGCD 36 63" 9                    $ C.myGCD 36 63
+               , test "myGCD (-3) (-6)" 3                $ C.myGCD (-3) (-6)
+               , test "myGCD (-3) 6" 3                   $ C.myGCD (-3) 6
+               , test "coprime 35 64" True               $ C.coprime 35 64
+               , test "coprime 12 19" True               $ C.coprime 12 19
+               , test "coprime 12 18" False              $ C.coprime 12 18
+               , test "totient 10" 4                     $ C.totient 10
+               , test "totient 400" 160                  $ C.totient 400
+               , test "primeFactors 315" [3,3,5,7]       $ C.primeFactors 315
+               , test "primeFactorsMult 315" [(3,2),(5,1),(7,1)] 
+                                                         $ C.primeFactorsMult 315
+               , test "primesR 10 20" [11,13,17,19]      $ C.primesR 10 20
+               , test "goldbach 28" (5, 23)              $ C.goldbach 28
+               , test "goldbach 12" (5, 7)               $ C.goldbach 12
+               , test "goldbachList 9 20" [(3,7),(5,7),(3,11),(3,13),(5,13),(3,17)]
+                                                         $ C.goldbachList 9 20
+               ]
              Section unexpected ->
                [ display $ "Unexpected section requested: " ++ show unexpected
                ]

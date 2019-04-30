@@ -37,6 +37,10 @@ import Text.Read            (readMaybe)
 import Prelude     
 import Math.NumberTheory.Powers.Squares
 import Data.Foldable
+import System.Random
+import Data.List
+
+
 implementThis :: a
 implementThis = error "SOMETHING IS NOT IMPLEMENTED!"
 
@@ -195,6 +199,146 @@ rotate l _ = l
 -- Remove and separate the K'th element from a list.
 removeAt :: [a] -> Int -> (a,[a])
 removeAt l n = (l !! (n-1),  [ x | (i, x) <- zip [1..] l, i /= n ])
+
+
+
+{- #####################################################################
+   Problems 21 to 30
+-}
+
+-- Insert an element at a given position into a list.
+insertAt :: a -> [a] -> Int -> [a]
+insertAt a l 1 = a:l 
+insertAt _ [] _ = error "Index out of bounds" 
+insertAt a (x:xs) n = x:insertAt a xs (n-1) 
+
+-- Create a list containing all integers within a given range.
+range :: Int -> Int -> [Int]
+range i1 i2 = [i1..i2]
+
+-- Extract a given number of randomly selected elements from a list.
+rnd_select :: [a] -> Int -> IO [a]
+rnd_select xs n = do
+    gen <- getStdGen
+    return $ take n [ xs !! x | x <- randomRs (0, (length xs) - 1) gen]
+
+-- Generate a random permutation of the elements of a list.
+rnd_permu :: [a] -> [a]
+rnd_permu = implementThis
+
+-- Generate the combinations of K distinct objects chosen from the N elements of a list
+-- In how many ways can a committee of 3 be chosen from a group of 12 people? We all know that there are C(12,3) = 220 possibilities (C(N,K) denotes the well-known binomial coefficients). For pure mathematicians, this result may be great. But we want to really generate all the possibilities in a list.
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _ = [[]]
+combinations _ [] = []
+combinations n (x:xs) = (map (x:) (combinations (n-1) xs)) ++ (combinations n xs)
+
+
+-- Multinomial Coefficients 
+--Group the elements of a set into disjoint subsets.
+
+-- a) In how many ways can a group of 9 people work in 3 disjoint subgroups of 2, 3 and 4 persons? Write a function that generates all the possibilities and returns them in a list.
+
+--Example:
+
+-- (group3 '(aldo beat carla david evi flip gary hugo ida))
+--( ( (ALDO BEAT) (CARLA DAVID EVI) (FLIP GARY HUGO IDA) )... )
+
+-- Example:
+
+-- (group '(aldo beat carla david evi flip gary hugo ida) '(2 2 5))
+-- ( ( (ALDO BEAT) (CARLA DAVID) (EVI FLIP GARY HUGO IDA) ... )
+-- Note that we do not want permutations of the group members; i.e. ((ALDO BEAT) ...) is the same solution as ((BEAT ALDO) ...). However, we make a difference between ((ALDO BEAT) (CARLA DAVID) ...) and ((CARLA DAVID) (ALDO BEAT) ...).
+
+--You may find more about this combinatorial problem in a good book on discrete mathematics under the term "multinomial coefficients".
+combination :: Int -> [a] -> [([a],[a])]
+combination 0 xs     = [([],xs)]
+combination n []     = []
+combination n (x:xs) = ts ++ ds
+  where
+    ts = [ (x:ys,zs) | (ys,zs) <- combination (n-1) xs ]
+    ds = [ (ys,x:zs) | (ys,zs) <- combination  n    xs ]
+
+group :: [Int] -> [a] -> [[[a]]]
+group [] _ = [[]]
+group (n:ns) xs =
+    [ g:gs | (g,rs) <- combination n xs
+           ,  gs    <- NinetyNineSolutions.group ns rs ]
+-- Sorting a list of lists according to length of sublists
+
+-- a) We suppose that a list contains elements that are lists themselves. The objective is to sort the elements of this list according to their length. E.g. short lists first, longer lists later, or vice versa.
+
+lsort :: (Ord a) => [[a]] -> [[a]]
+lsort = sortBy (\l1 l2 -> compare (length l1) (length l2))
+
+--b) Again, we suppose that a list contains elements that are lists themselves. But this time the objective is to sort the elements of this list according to their length frequency; i.e., in the default, where sorting is done ascendingly, lists with rare lengths are placed first, others with a more frequent length come later.
+lfsort ::(Ord a) => [[a]] -> [[a]]
+lfsort x = sortBy (\l1 l2 -> compare (getLenFreq x (length l1)) (getLenFreq x (length l2))) x
+  where 
+    getLenFreq :: [[a]] -> Int -> Int
+    getLenFreq ls len = foldl (+) 0 (map (const 1) (filter (\y -> length y == len) ls))  
+
+
+{- #####################################################################
+   Problems 31 to 40
+-}
+
+-- Determine whether a given integer number is prime.
+isPrime :: Int -> Bool
+isPrime = implementThis
+
+-- Determine the greatest common divisor of two positive integer numbers. Use Euclid's algorithm.
+myGCD :: Int -> Int -> Int
+myGCD = implementThis
+
+-- Determine whether two positive integer numbers are coprime. Two numbers are coprime if their greatest common divisor equals 1.
+coprime :: Int -> Int -> Bool
+coprime = implementThis
+
+-- Calculate Euler's totient function phi(m).
+--  Euler's so-called totient function phi(m) is defined as the number of positive integers r (1 <= r < m) that are coprime to m.
+--  Example: m = 10: r = 1,3,7,9; thus phi(m) = 4. Note the special case: phi(1) = 1.
+totient :: Int -> Int
+totient = implementThis
+
+-- Determine the prime factors of a given positive integer. Construct a flat list containing the prime factors in ascending order.
+primeFactors :: Int -> [Int]
+primeFactors = implementThis
+
+-- Determine the prime factors of a given positive integer. Construct a list containing the prime factors and their multiplicity.
+primeFactorsMult :: Int -> [(Int, Int)]
+primeFactorsMult = implementThis
+
+-- Given a range of integers by its lower and upper limit, construct a list of all prime numbers in that range.
+primesR :: Int -> Int -> [Int]
+primesR = implementThis
+
+-- Goldbach's conjecture says that every positive even number greater than 2 is the sum of two prime numbers. 
+-- Example: 28 = 5 + 23. 
+-- It is one of the most famous facts in number theory that has not been proved to be correct in the general case. It has been numerically confirmed up to very large numbers (much larger than we can go with our Prolog system). Write a predicate to find the two prime numbers that sum up to a given even integer.
+goldbach :: Int -> (Int, Int)
+goldbach = implementThis
+
+-- Given a range of integers by its lower and upper limit, print a list of all even numbers and their Goldbach composition.
+-- In most cases, if an even number is written as the sum of two prime numbers, one of them is very small. Very rarely, the primes are both bigger than say 50. Try to find out how many such cases there are in the range 2..3000.
+goldbachList :: Int -> Int -> [(Int, Int)]
+goldbachList = implementThis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
