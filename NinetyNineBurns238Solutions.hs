@@ -285,44 +285,55 @@ lfsort x = sortBy (\l1 l2 -> compare (getLenFreq x (length l1)) (getLenFreq x (l
 
 -- Determine whether a given integer number is prime.
 isPrime :: Int -> Bool
-isPrime = implementThis
+isPrime a = and [ a `mod` x /= 0 | x <- [2..9], x /= a ]
 
 -- Determine the greatest common divisor of two positive integer numbers. Use Euclid's algorithm.
 myGCD :: Int -> Int -> Int
-myGCD = implementThis
+myGCD a 0 = abs a
+myGCD a b = myGCD b $ a `mod` b  
 
 -- Determine whether two positive integer numbers are coprime. Two numbers are coprime if their greatest common divisor equals 1.
 coprime :: Int -> Int -> Bool
-coprime = implementThis
+coprime a b = myGCD a b == 1 
 
 -- Calculate Euler's totient function phi(m).
 --  Euler's so-called totient function phi(m) is defined as the number of positive integers r (1 <= r < m) that are coprime to m.
 --  Example: m = 10: r = 1,3,7,9; thus phi(m) = 4. Note the special case: phi(1) = 1.
 totient :: Int -> Int
-totient = implementThis
+totient a = length [ x | x <- [1..a], coprime a x]
 
 -- Determine the prime factors of a given positive integer. Construct a flat list containing the prime factors in ascending order.
 primeFactors :: Int -> [Int]
-primeFactors = implementThis
+primeFactors a = fac a 2
+  where fac :: Int -> Int -> [Int]
+        fac y z
+          | y == z = [y]
+          | (isPrime z) && (y `mod` z == 0) = (z:fac (y `div` z) 2)
+          | otherwise = fac y $z+1
 
 -- Determine the prime factors of a given positive integer. Construct a list containing the prime factors and their multiplicity.
 primeFactorsMult :: Int -> [(Int, Int)]
-primeFactorsMult = implementThis
+primeFactorsMult n = map swap $ encode $ primeFactors n
+  where swap (x,y) = (y,x)
 
 -- Given a range of integers by its lower and upper limit, construct a list of all prime numbers in that range.
 primesR :: Int -> Int -> [Int]
-primesR = implementThis
+primesR a b = [x | x <- [a..b], isPrime x]
 
 -- Goldbach's conjecture says that every positive even number greater than 2 is the sum of two prime numbers. 
 -- Example: 28 = 5 + 23. 
 -- It is one of the most famous facts in number theory that has not been proved to be correct in the general case. It has been numerically confirmed up to very large numbers (much larger than we can go with our Prolog system). Write a predicate to find the two prime numbers that sum up to a given even integer.
 goldbach :: Int -> (Int, Int)
-goldbach = implementThis
+goldbach a = goldIter a 2
+  where goldIter :: Int -> Int -> (Int, Int)
+        goldIter x y  
+          | (isPrime y) && (isPrime (x - y)) = (y, (x - y))
+          | otherwise = goldIter x $ y + 1   
 
 -- Given a range of integers by its lower and upper limit, print a list of all even numbers and their Goldbach composition.
 -- In most cases, if an even number is written as the sum of two prime numbers, one of them is very small. Very rarely, the primes are both bigger than say 50. Try to find out how many such cases there are in the range 2..3000.
 goldbachList :: Int -> Int -> [(Int, Int)]
-goldbachList = implementThis
+goldbachList a b = [goldbach x |x <- [a..b], even x] 
 
 
 
